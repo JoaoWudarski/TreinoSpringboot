@@ -12,6 +12,11 @@ public class MeuControle {
         return "xxxx";
     }
 
+    @GetMapping("/celular")
+    public String cel() {
+        return "xxxx";
+    }
+
 
     @GetMapping("/cliente/{codigo}")
     public String Cliente(@PathVariable int codigo){
