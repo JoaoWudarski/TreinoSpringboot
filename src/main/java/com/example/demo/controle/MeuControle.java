@@ -1,58 +1,40 @@
 package com.example.demo.controle;
 
-import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import com.example.demo.repository.ClienteRepository;
+import com.example.demo.model.Cliente;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 
 
 @RestController
 public class MeuControle {
     
-    List <Cliente> clientes;
-
-    @PostConstruct
-    public void criarClientes(){
-        Cliente c1 = new Cliente();
-        Cliente c2 = new Cliente();
-        Cliente c3 = new Cliente();
-
-        c1.codigo = 1;
-        c1.nome = "Jose";
-        c1.endereco = "Rux X, 99";
-        c1.saldo = 100.345;
-
-        c2.codigo = 2;
-        c2.nome = "Maria";
-        c2.endereco = "Rux Y, 92";
-        c2.saldo = 123;
-
-        c3.codigo = 3;
-        c3.nome = "Mario";
-        c3.endereco = "Rux H, 23";
-        c3.saldo = 1230;
-
-        clientes = Arrays.asList(c1, c2, c3);
-    }
+    @Autowired
+    private ClienteRepository repository;
 
     @GetMapping("/clientes")
-    public List<Cliente> cliente() {
-        return clientes;
+    public List<Cliente> getClientes() {
+        return repository.getAllClientes();
     }
 
 
     @GetMapping("/clientes/{codigo}")
-    public Cliente Cliente(@PathVariable int codigo){
-        for(Cliente i : clientes){
-            if(i.codigo == codigo){
-                return i;
-            }
-        }
-        
-        return null;
+    public Cliente Cliente(@PathVariable int codigo) {
+        return repository.getClienteByCodigo(codigo);
     }
+
+    @PostMapping("/clientes")
+    public Cliente salvar(@RequestBody Cliente cliente) {
+        return repository.save(cliente);
+
+    }
+    
 }
