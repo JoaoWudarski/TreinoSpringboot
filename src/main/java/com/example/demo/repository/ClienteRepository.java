@@ -61,4 +61,22 @@ public class ClienteRepository {
         clientes.add(cliente);
         return cliente;
     }
-}
+
+    public void remove(Cliente cliente){
+        clientes.remove(cliente);
+    }
+
+
+	public Cliente update(Cliente cliente) {
+
+        Cliente aux = getClienteByCodigo(cliente.getCodigo());
+
+        if(aux != null){
+            aux.setEndereco(cliente.getEndereco());
+            aux.setNome(cliente.getNome());
+            aux.setSaldo(cliente.getSaldo());
+        }
+
+		return aux;
+    }
+}    
