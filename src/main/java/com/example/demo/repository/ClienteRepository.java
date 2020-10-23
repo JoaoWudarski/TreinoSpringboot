@@ -2,12 +2,13 @@ package com.example.demo.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.PostConstruct;
 
 import com.example.demo.model.Cliente;
 
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 
 @Component
 public class ClienteRepository {
@@ -46,13 +47,13 @@ public class ClienteRepository {
         return clientes;
     }
 
-    public Cliente getClienteByCodigo(int codigo){
+    public Optional<Cliente> getClienteByCodigo(int codigo){
         for(Cliente i : clientes){
             if(i.getCodigo() == codigo){
-                return i;
+                return Optional.of(i);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     public Cliente save(Cliente cliente){
@@ -69,7 +70,7 @@ public class ClienteRepository {
 
 	public Cliente update(Cliente cliente) {
 
-        Cliente aux = getClienteByCodigo(cliente.getCodigo());
+        Cliente aux = getClienteByCodigo(cliente.getCodigo()).get();
 
         if(aux != null){
             aux.setEndereco(cliente.getEndereco());
