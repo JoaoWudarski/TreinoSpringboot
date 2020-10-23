@@ -1,10 +1,13 @@
 package com.example.demo.controle;
 
-import java.net.URI;
 import java.util.List;
 
-import com.example.demo.repository.ClienteRepository;
+import javax.servlet.http.HttpServletRequest;
+
+import com.example.demo.dto.ClienteDTO;
 import com.example.demo.model.Cliente;
+import com.example.demo.repository.ClienteRepository;
+import com.example.demo.service.ClienteService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 
 
@@ -25,6 +30,9 @@ public class MeuControle {
     
     @Autowired
     private ClienteRepository repository;
+
+    @Autowired
+    private ClienteService service;
 
     @GetMapping()
     public List<Cliente> getClientes() {
@@ -47,11 +55,19 @@ public class MeuControle {
     }
 
     @PostMapping()
-    public ResponseEntity<Void> salvar(@RequestBody Cliente cliente){
-       cliente = repository.save(cliente);
-        URI uri = URI.create("http://localhost:8080/clientes/" + cliente.getCodigo());
-       return ResponseEntity.created(uri).build();
+    public ResponseEntity<Void> salvar(@RequestBody ClienteDTO clienteDTO,
+                                        HttpServletRequest request,
+                                        UriComponentsBuilder builder
+    ){
+        Cliente cliente = service.fromDTO(clienteDTO);
+        cliente = repository.save(cliente);
+        UriComponents uriComponents = builder.path(
+        request.getRequestURI()+ "/" + cliente.getCodigo()).build();
+       
+        return ResponseEntity.created(uriComponents.toUri()).build();
     }
+
+
 
     @DeleteMapping("/{codigo}")
     public ResponseEntity<Void> Delete(@PathVariable int codigo){
@@ -67,9 +83,11 @@ public class MeuControle {
     }
     
     @PutMapping("/{codigo}")
-    public ResponseEntity<Cliente> atualizar(@PathVariable int codigo, @RequestBody Cliente cliente){
-
+    public ResponseEntity<Cliente> atualizar(@PathVariable int codigo, 
+                                             @RequestBody ClienteDTO clienteDTO){
+        
         if(repository.getClienteByCodigo(codigo) != null){
+            Cliente cliente = service.fromDTO(clienteDTO);
             cliente.setCodigo(codigo);
             cliente = repository.update(cliente);
             return ResponseEntity.ok(cliente);
